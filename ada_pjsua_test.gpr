@@ -1,0 +1,54 @@
+-- with "florist";
+project ada_pjsua_test is
+
+   for Main use ("ada_pjsua_test");
+   for Source_Dirs use ("src/");
+   for Object_Dir use "build";
+   for Exec_Dir use ".";
+
+
+   package Builder is
+      for Default_Switches ("Ada") use ("-gnat05");
+   end Builder;
+
+   package Compiler is
+      for Default_Switches ("Ada") use ("-g");
+   end Compiler;
+
+   package Linker is
+      for Default_Switches ("Ada") use 
+        ("-lpjsua-x86_64-unknown-linux-gnu",
+        "-lpjsip-ua-x86_64-unknown-linux-gnu",
+        "-lpjsip-simple-x86_64-unknown-linux-gnu",
+        "-lpjsip-x86_64-unknown-linux-gnu",
+        "-lpjmedia-codec-x86_64-unknown-linux-gnu",
+        "-lpjmedia-videodev-x86_64-unknown-linux-gnu",
+        "-lpjmedia-x86_64-unknown-linux-gnu",
+        "-lpjmedia-audiodev-x86_64-unknown-linux-gnu",
+        "-lpjnath-x86_64-unknown-linux-gnu",
+        "-lilbccodec-x86_64-unknown-linux-gnu",
+        "-lportaudio-x86_64-unknown-linux-gnu",
+        "-lresample-x86_64-unknown-linux-gnu",
+        "-lsrtp-x86_64-unknown-linux-gnu",
+        "-lspeex-x86_64-unknown-linux-gnu",
+        "-lpjlib-util-x86_64-unknown-linux-gnu",
+        "-lpj-x86_64-unknown-linux-gnu",
+--        "-lm",
+--	"-lnsl",
+--	"-lrt",
+	"-lpthread",
+	"-lasound",
+	"-lavcodec"
+--	"-lswscale",
+--	"-lavutil"
+--	"-lv4l2"
+--        ,"build/test.o"
+	);
+   end Linker;
+
+   package Binder is
+      for Default_Switches ("Ada") use ("-g");
+   end Binder;
+
+end ada_pjsua_test;
+

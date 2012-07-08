@@ -1,0 +1,12 @@
+PJSUA Ada bindings
+=============
+
+Provides an interface for including a SIP user agent in an Ada progam
+
+TODO
+----
+  * Patch to use Ada 2012 style convention
+
+Bugs
+----
+  * None yet.. Spooky
