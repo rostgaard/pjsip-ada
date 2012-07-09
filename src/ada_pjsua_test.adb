@@ -5,7 +5,7 @@ with Interfaces.C; -- REMOVE THIS
 -- Local packages
 with Debug;
 with Configuration;
-with PJ_Types; use PJ_Types;
+with Types; use Types;
 with PJSUA;
 with Transport_SRTP;
 

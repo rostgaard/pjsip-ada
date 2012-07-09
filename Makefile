@@ -1,7 +1,8 @@
 export TARGET_NAME := x86_64-unknown-linux-gnu
 
-all: default
+all: manual_bindings_test
 
+# The simple C user agent
 simple_pjsua:
 	gcc simple_pjsua.c -o simple_pjsua -lpjsua-$(TARGET_NAME)\
         -lpjsip-ua-$(TARGET_NAME)\
@@ -24,9 +25,6 @@ simple_pjsua:
         -lm -lnsl -lrt -lpthread  -lasound  -lavcodec -lswscale -lavutil   -lv4l2
 	
 
-default:
-	gnatmake -P ada_pjsua_test
-
 clean:
 	-rm build/*ali build/*.o
 
@@ -34,7 +32,11 @@ distclean: clean
 	-gnatclean ada_pjsua_test
 
 distclean: clean
-	gnatclean ada_pjsua_test
+	-gnatclean ada_pjsua_test
 	rm ada_pjsua_test
+
+manual_bindings_test:
+	gnatmake -P ada_pjsua_test
+
 
 .PHONY: simple_pjsua
