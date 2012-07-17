@@ -1,6 +1,8 @@
 export TARGET_NAME := x86_64-unknown-linux-gnu
 
-all: assert_generator manual_bindings_test
+all: assert_generator pjsua_ada_user_agent
+
+deps: pjlibs
 
 assert_generator:
 	gcc src/assert_sizes_generator.c -o assert_sizes_generator
@@ -36,10 +38,23 @@ distclean: clean
 	-rm ada_pjsua_test
 	-rm assert_sizes_generator
 	-rm src/assert_sizes.ads
+	-rm pjproject-2.0.tar.bz2
 
-manual_bindings_test:
+pjsua_ada_user_agent:
 	./assert_sizes_generator Assert_Sizes > src/assert_sizes.ads
 	gnatmake -P ada_pjsua_test
 
+pjproject-2.0: pjproject-2.0.tar.bz2
+	tar xjf pjproject-2.0.tar.bz2
+
+pjlibs: pjproject-2.0
+	(cd pjproject-2.0; ./configure && make dep && make)	
+
+pjproject-2.0.tar.bz2:
+	wget http://www.pjsip.org/release/2.0/pjproject-2.0.tar.bz2
+
+deps_install: pjproject-2.0
+	(cd pjproject-2.0; make install);
 
 .PHONY: simple_pjsua
+
