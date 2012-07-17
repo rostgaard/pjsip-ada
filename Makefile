@@ -1,6 +1,16 @@
 export TARGET_NAME := x86_64-unknown-linux-gnu
+export PJSUA_DIR := $(PWD)/pjsua-lib
 
-all: assert_generator pjsua_ada_user_agent
+PJBASE=$(PWD)/pjproject-2.0
+include $(PJBASE)/build.mak
+
+CC      = $(APP_CC)
+LDFLAGS = $(APP_LDFLAGS)
+LDLIBS  = $(APP_LDLIBS)
+CFLAGS  = $(APP_CFLAGS)
+CPPFLAGS= ${CFLAGS}
+
+all: assert_generator gnatmake_part ada_pjsua_test
 
 deps: pjlibs
 
@@ -8,30 +18,14 @@ assert_generator:
 	gcc src/assert_sizes_generator.c -o assert_sizes_generator
 
 # The simple C user agent
-simple_pjsua:
-	gcc simple_pjsua.c -o simple_pjsua -lpjsua-$(TARGET_NAME)\
-        -lpjsip-ua-$(TARGET_NAME)\
-        -lpjsip-simple-$(TARGET_NAME)\
-        -lpjsip-$(TARGET_NAME)\
-        -lpjmedia-codec-$(TARGET_NAME)\
-        -lpjmedia-videodev-$(TARGET_NAME)\
-        -lpjmedia-$(TARGET_NAME)\
-        -lpjmedia-audiodev-$(TARGET_NAME)\
-        -lpjnath-$(TARGET_NAME)\
-        -lilbccodec-$(TARGET_NAME)\
-        -lportaudio-$(TARGET_NAME)\
-        -lresample-$(TARGET_NAME)\
-        -lsrtp-$(TARGET_NAME)\
-        -lspeex-$(TARGET_NAME)\
-        -lpjlib-util-$(TARGET_NAME)\
-        $(APP_THIRD_PARTY_LIBS)\
-        $(APP_THIRD_PARTY_EXT)\
-        -lpj-$(TARGET_NAME)\
-        -lm -lnsl -lrt -lpthread  -lasound  -lavcodec -lswscale -lavutil   -lv4l2
-	
+simple_pjsua:  simple_pjsua.c
+	$(CC) -o $@ $< $(CPPFLAGS) $(LDFLAGS) $(LDLIBS)
+
+ada_pjsua_test:
+	(gnatbind build/ada_pjsua_test.ali && gnatlink build/ada_pjsua_test.ali -o $@ $<  $(CPPFLAGS) $(LDFLAGS) $(LDLIBS))
 
 clean:
-	-rm build/*ali build/*.o
+	-rm build/*ali build/*.o build/b~*.ad?
 
 distclean: clean
 	-gnatclean ada_pjsua_test
@@ -40,7 +34,7 @@ distclean: clean
 	-rm src/assert_sizes.ads
 	-rm pjproject-2.0.tar.bz2
 
-pjsua_ada_user_agent:
+gnatmake_part:
 	./assert_sizes_generator Assert_Sizes > src/assert_sizes.ads
 	gnatmake -P ada_pjsua_test
 
@@ -48,7 +42,7 @@ pjproject-2.0: pjproject-2.0.tar.bz2
 	tar xjf pjproject-2.0.tar.bz2
 
 pjlibs: pjproject-2.0
-	(cd pjproject-2.0; ./configure && make dep && make)	
+	(cd pjproject-2.0; ./configure --prefix=$(PJSUA_DIR) && make dep && make && make install)	
 
 pjproject-2.0.tar.bz2:
 	wget http://www.pjsip.org/release/2.0/pjproject-2.0.tar.bz2
