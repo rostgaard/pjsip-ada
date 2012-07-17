@@ -1,6 +1,9 @@
 export TARGET_NAME := x86_64-unknown-linux-gnu
 
-all: manual_bindings_test
+all: assert_generator manual_bindings_test
+
+assert_generator:
+	gcc src/assert_sizes_generator.c -o assert_sizes_generator
 
 # The simple C user agent
 simple_pjsua:
@@ -30,12 +33,12 @@ clean:
 
 distclean: clean
 	-gnatclean ada_pjsua_test
-
-distclean: clean
-	-gnatclean ada_pjsua_test
-	rm ada_pjsua_test
+	-rm ada_pjsua_test
+	-rm assert_sizes_generator
+	-rm src/assert_sizes.ads
 
 manual_bindings_test:
+	./assert_sizes_generator Assert_Sizes > src/assert_sizes.ads
 	gnatmake -P ada_pjsua_test
 
 
