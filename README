@@ -1,7 +1,8 @@
 PJSUA Ada bindings
 =============
 
-Provides an interface for including a SIP user agent in an Ada progam
+Provides an interface for including a SIP user agent in an Ada progam.
+
 
 TODO
 ----
@@ -9,4 +10,10 @@ TODO
 
 Bugs
 ----
-  * None yet.. Spooky
+
+* gcc: error trying to exec 'gnat1': execvp: No such file or directory
+
+It seems that there are some hiccups with locating gnat1. For what it's worth, it can be
+worked around by simply specifying the location of gnat1. E.g:
+ 
+ PATH=$PATH:/usr/gnat/libexec/gcc/x86_64-pc-linux-gnu/4.5.4/ make

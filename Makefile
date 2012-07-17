@@ -2,7 +2,7 @@ export TARGET_NAME := x86_64-unknown-linux-gnu
 export PJSUA_DIR := $(PWD)/pjsua-lib
 
 PJBASE=$(PWD)/pjproject-2.0
-include $(PJBASE)/build.mak
+-include $(PJBASE)/build.mak
 
 CC      = $(APP_CC)
 LDFLAGS = $(APP_LDFLAGS)
@@ -15,7 +15,7 @@ all: assert_generator gnatmake_part ada_pjsua_test
 deps: pjlibs
 
 assert_generator:
-	gcc src/assert_sizes_generator.c -o assert_sizes_generator
+	$(CC) src/assert_sizes_generator.c -o $@ $< $(CPPFLAGS) $(LDFLAGS) $(LDLIBS)
 
 # The simple C user agent
 simple_pjsua:  simple_pjsua.c
