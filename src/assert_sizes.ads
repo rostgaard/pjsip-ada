@@ -4,5 +4,7 @@ package Assert_Sizes is
    Byte_Size : constant Natural := 8;
    
    Logging_Config_Type_Size : constant Natural := 48;
-   
+   String_T_Size            : constant Natural := 16;
+   Time_Value_Type_Size     : constant Natural := 16;
+   Host_Info_Type_Size      : constant Natural := 32;
 end Assert_Sizes;
