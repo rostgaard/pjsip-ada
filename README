@@ -8,13 +8,10 @@ Installation
 For now, there is only the thin bindings which is pseudo-generated with gcc and a basic test case.
 To build it, you need PJSIP+PJSUA. Fear not, the Makefile should take care of it for you.
 
-Just run:
- make deps
+ - Run "make deps" to build the pj(sip|sua) libs.
+ - Run "make" to build the test case
 
-To build the pj(sip|sua) libs
-
-And then
- make to build the test case
+Don't forget to move the .dist config file into place
 
 TODO
 ----

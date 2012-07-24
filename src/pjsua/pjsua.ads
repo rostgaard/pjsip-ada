@@ -6,7 +6,9 @@ with Types;
 with SIP_Timer;
 with SIP_Auth;
 with Sip_Event;
+with SIP_Types;
 with SIP_Transport;
+with SIP_Transaction;
 
 -- Internal data consistency checks
 with Assert_Sizes; use Assert_Sizes;
@@ -23,6 +25,7 @@ package PJSUA is
    subtype Player_Id_Type       is C.Int;
    subtype Recorder_I_Type      is C.Int;
    subtype Confing_Port_Id_Type is C.Int; 
+   subtype Transport_ID_Type    is C.Int;
    
    type State_Type is 
      (Uninitialized,
@@ -46,6 +49,8 @@ package PJSUA is
    type Proxy_Servers_Array is array (1 .. 4) of PJ_Types.String_T;
    pragma Convention (C,Proxy_Servers_Array);
    for Proxy_Servers_Array'Size use 8*128;
+   pragma Assert(Proxy_Servers_Array'Size = 8*128);
+
    
    type Name_Servers_Array is array (1 .. 4) of PJ_Types.String_T;
    pragma Convention (C,Name_Servers_Array);
@@ -86,19 +91,23 @@ package PJSUA is
    pragma Assert (Logging_Config_Type'Size = Logging_Config_Type_Size*Byte_size);
    
    
+   type Call_Info_Type_Dummy is null record;
+   for Call_Info_Type_Dummy'Size use Call_Info_Type_Size;
    
-   type Event_Callback_Type is record
+   type Call_Info_Type is new Call_Info_Type_Dummy;
+  
+  type Event_Callback_Type is record
       On_Call_State : access procedure 
      	(Call_Id : Call_Id_Type; Event : access SIP_Event.Event_Type);  -- pjsua.h:624
       On_Incoming_Call : access procedure
-	(Account_Id : Account_Id_Type;
-	 Call_Id : Call_Id_Type;
-	 RX_Data : access SIP_Transport.RX_Data_Type);  -- pjsua.h:634
+	(Account_ID : PJSUA.Account_ID_Type;
+	 Call_ID    : PJSUA.Call_Id_Type;
+	 RX_Data    : SIP_Transport.RX_Data_Type);
+      On_Call_Tsx_State : access procedure
+	(Call_Id     : Call_Id_Type;
+	 Transaction : access SIP_Transaction.Transaction_Type;
+	 Event       : access SIP_Event.Event_Type);
    end record;
-   --     on_call_tsx_state : access procedure
-   --          (arg1 : pjsua_call_id;
-   --           arg2 : access pjsip_sip_types_h.pjsip_transaction;
-   --           arg3 : access pjsip_sip_types_h.pjsip_event);  -- pjsua.h:648
    --     on_call_media_state : access procedure (arg1 : pjsua_call_id);  -- pjsua.h:661
    --     on_call_sdp_created : access procedure
    --          (arg1 : pjsua_call_id;
@@ -378,43 +387,78 @@ package PJSUA is
    pragma Convention (C,Transport_Config_Type);
    for Transport_Config_Type'Size use 184*8;
    
-   procedure Config_Default (Config : out Config_Type);
+   function Call_Get_Info (Call_ID          : Call_Id_Type; 
+			   Call_Information : access Call_Info_Type) return Types.Status_T;
+   pragma Import (C, Call_Get_Info, "pjsua_call_get_info");
+   
+   -- pjsua_call_answer
+   function Call_Answer
+     (Call_ID      : Call_Id_Type;
+      Code         : C.unsigned;
+      Reason       : access constant Types.String_T;
+      Message_Data : System.Address) return Types.Status_T;  -- pjsua.h:4044
+   pragma Import (C, Call_Answer, "pjsua_call_answer");
+ 
+   procedure Config_Default (Config : access Config_Type);
+   pragma Import (C, Config_Default, "pjsua_config_default");
    -- Initializes the configuration object with default values
    
+   -- pjsua_transport_config_default 
    procedure Transport_Config_Default (Transport_Config : in Transport_Config_Type);
+   pragma Import (C, Transport_Config_Default, "pjsua_transport_config_default");
    -- Initializes the transport configuration object with default values
+
+   -- pjsua_transport_create
+   function Transport_Create
+     (Transport_Type   : in     SIP_Types.Transport_Type_Enum;
+      Transport_Config : access Transport_Config_Type;
+      Transport_ID     : access Transport_ID_type) return Types.Status_T;
+   pragma Import (C, Transport_Create, "pjsua_transport_create");
    
-   procedure Transport_Create (Transport_Type   : Integer;
-			       Transport_Config : in Transport_Config_Type);   
-   -- TODO
-   
-   procedure Logging_Config_Default (Logging_Config : in Logging_Config_Type);
+   -- pjsua_logging_config_default
+   procedure Logging_Config_Default (Logging_Config : access Logging_Config_Type);
+   pragma Import (C,Logging_Config_Default,"pjsua_logging_config_default");
    -- Initialize the logging record with default values.
    
-   procedure Init (Config           : Config_Type; 
-		   Logging_Config    :  Logging_Config_Type
-		    --Pjsua_Media_Config : Pjsua_Media_Config_type --TODO
-		 );
+   -- pjsua_init
+   function Init
+     (Config             : access Config_Type;
+      Logging_Config     : access Logging_Config_Type;
+      Pjsua_Media_Config : System.Address) return Types.Status_T;
+   pragma Import (C, Init, "pjsua_init");
    
-   function Create return Integer;
+   -- pjsua_create
+   function Create return Types.Status_T;
+   pragma Import (C, Create, "pjsua_create");
    -- Creates a PJSUA "object" internally in the C part of the application
-   
-   function Start return Integer;
+     
+   -- pjsua_start
+   function Start return Types.Status_T;
+   pragma Import (C, Start, "pjsua_start");
    -- Starts the SIP stack
    
-   function To_Pj_String(Item : in String) return PJ_Types.String_T;
-   -- Converts a standard String into an internal PJ type string.
-
-   function Verify_Url (URL : in String) return Integer;
+   -- pjsua_destroy
+   function Destroy return Types.Status_T;
+   pragma Import (C, Destroy, "pjsua_destroy");
+   
+   -- pj_str (should be moved)
+   function To_PJ_String (Str : C.Strings.Chars_Ptr) return Types.String_T;
+   pragma Import (C,To_PJ_String,"pj_str");
+   
+   function Verify_Sip_Url (URL : in C.Strings.Chars_Ptr) return Types.Status_T;
+   pragma Import (C,Verify_Sip_Url,"pjsua_verify_sip_url");
    -- Returns PJ_Success on success, otherwise an error code
-   -- TODO: Figure out the error codes and return them enumerated instead
    
-   procedure Account_Config_Default (Account_Config : out Account_Config_Type);
+   procedure Account_Config_Default (Account_Config : access Account_Config_Type);
    -- Initializes the Config_Type record with default values;
+   pragma Import (C,Account_Config_Default,"pjsua_acc_config_default");
    
-   -- TODO, make this correspond to the C equivalent
-   --status = pjsua_acc_add(&cfg, PJ_TRUE, &acc_id);
-   function Account_Add (Account_Config : in Account_Config_Type; 
-			 Account_Id     : in C.Int ) return integer;
+   -- pjsua_acc_add
+   function Account_Add
+     (Account_Config : access Account_Config_Type; 
+      Is_Default     : Types.Boolean_T := Types.True;
+      Account_Id     : access Account_Id_Type) return types.status_t;
+   pragma Import (C, Account_Add, "pjsua_acc_add");
+
    
 end PJSUA;

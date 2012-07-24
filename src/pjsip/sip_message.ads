@@ -6,7 +6,7 @@ with Pool;
 with Types;
 with SIP_URI;
 
-package SIP_Msg is
+package SIP_Message is
    package C renames Interfaces.C;
    
 
@@ -167,4 +167,4 @@ package SIP_Msg is
    
    
    
-end SIP_Msg;
+end SIP_Message;

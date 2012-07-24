@@ -84,11 +84,19 @@ int main(int argc, char *argv[])
   
   pjsip_host_info host_info;
   add_constant("Host_Info_Type_Size", sizeof host_info);
-  
+
+  pjsip_host_port host_port;
+  add_constant("Host_Port_Type_Size", sizeof host_port);
+  /* printf("sizeof host_port.host = %d\n", sizeof host_port.host); */
+  /* printf("sizeof host_port.port = %d\n", sizeof host_port.port); */
+
   pjsua_transport_config transport_cfg;
   add_constant("Transport_Config_Type_Size", sizeof transport_cfg);
 
-  /* End the file */
+  pjsua_call_info call_info;
+  add_constant("Call_Info_Type_Size;", sizeof call_info);
+
+ /* End the file */
   new_line();
 
   indention_level--;

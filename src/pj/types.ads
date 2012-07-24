@@ -26,10 +26,10 @@ package Types is
    
    type Atomic_T is null record;
    
-   Success : constant Integer := 0; -- PJ_SUCCESS
+   Success : constant Status_T := 0; -- PJ_SUCCESS
    
-   True  : constant Integer := 1; -- PJ_TRUE;
-   False : constant Integer := 1; -- PJ_FALSE;
+   True  : constant Boolean_T := 1; -- PJ_TRUE;
+   False : constant Boolean_T := 1; -- PJ_FALSE;
    
    type Transport_Type_Enum is 
      (Unspecified,
@@ -91,20 +91,23 @@ package Types is
       Buffer_End : C.Strings.Chars_Ptr;
    end record;
    pragma Convention (C_Pass_By_Copy, Buffer_Type);
-
+   
+   type Host_Port_Padding is null record;
+   for Host_Port_Padding'Size use C.Int'Size;
    type Host_Port_Type is record
-      Host : aliased String_T;
-      Port : aliased C.int;
+      Host    : aliased String_T;
+      Port    : aliased C.int;
+      Padding : Host_Port_Padding; -- XXX Make this portable
    end record;
    pragma Convention (C_Pass_By_Copy, Host_Port_Type);
+   pragma Assert (Host_Port_Type'Size = Host_Port_Type_Size*Byte_Size);
 
    type Host_Info_Type is record
-      Flag      : aliased C.Unsigned; 
+      Flag      : aliased C.Unsigned;
       Host_Type : aliased Transport_Type_Enum;
       Address   : aliased Host_Port_Type;
    end record;
    pragma Convention (C_Pass_By_Copy, Host_Info_Type);
-   pragma Assert (Host_Info_Type'Size = Host_Info_Type_Size*Byte_Size);
-   
+   pragma Assert (Host_Info_Type'Size = Host_Info_Type_Size*Byte_Size);   
    
 end Types;

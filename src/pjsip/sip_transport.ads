@@ -7,7 +7,8 @@ with Pool;
 with Timer;
 with Sock;
 with IOqueue;
-with SIP_Msg;
+--with SIP_Message;
+--with SIP_Module;
 
 package SIP_Transport is
    package C renames Interfaces.C;
@@ -18,7 +19,51 @@ package SIP_Transport is
       Rdata   : access Rx_Data_Type;
    end record;
    pragma Convention (C_Pass_By_Copy, Rx_Data_Op_Key_Type);
-
+   
+   
+   type Transaction_Type is null record;
+   
+   --  -- pjsip_transaction
+   --  subtype anon984_anon2255_array is Interfaces.C.char_array (1 .. 32);
+   --  type anon984_anon2093_array is array (1 .. 32) of System.Address;
+   --  type Transaction is record
+   --     Pool      : access Pool.Pool_Type;
+   --     Tsx_User  : access pjsip_sip_types_h.pjsip_module;  -- /usr/local/include/pjsip/sip_transaction.h:86
+   --     endpt : System.Address;  -- /usr/local/include/pjsip/sip_transaction.h:87
+   --     mutex : System.Address;  -- /usr/local/include/pjsip/sip_transaction.h:88
+   --     mutex_b : System.Address;  -- /usr/local/include/pjsip/sip_transaction.h:89
+   --     obj_name : aliased anon984_anon2255_array;  -- /usr/local/include/pjsip/sip_transaction.h:96
+   --     role : aliased pjsip_sip_types_h.pjsip_role_e;  -- /usr/local/include/pjsip/sip_transaction.h:97
+   --     method : aliased pjsip_sip_types_h.pjsip_method;  -- /usr/local/include/pjsip/sip_transaction.h:98
+   --     cseq : aliased pj_types_h.pj_int32_t;  -- /usr/local/include/pjsip/sip_transaction.h:99
+   --     transaction_key : aliased pj_types_h.pj_str_t;  -- /usr/local/include/pjsip/sip_transaction.h:100
+   --     hashed_key : aliased pj_types_h.pj_uint32_t;  -- /usr/local/include/pjsip/sip_transaction.h:101
+   --     branch : aliased pj_types_h.pj_str_t;  -- /usr/local/include/pjsip/sip_transaction.h:102
+   --     status_code : aliased int;  -- /usr/local/include/pjsip/sip_transaction.h:107
+   --     status_text : aliased pj_types_h.pj_str_t;  -- /usr/local/include/pjsip/sip_transaction.h:108
+   --     state : aliased pjsip_tsx_state_e;  -- /usr/local/include/pjsip/sip_transaction.h:109
+   --     handle_200resp : aliased int;  -- /usr/local/include/pjsip/sip_transaction.h:110
+   --     tracing : aliased int;  -- /usr/local/include/pjsip/sip_transaction.h:111
+   --     state_handler : access function (arg1 : access pjsip_transaction; arg2 : access pjsip_sip_types_h.pjsip_event) return pj_types_h.pj_status_t;  -- /usr/local/include/pjsip/sip_transaction.h:114
+   --     transport : access pjsip_sip_types_h.pjsip_transport;  -- /usr/local/include/pjsip/sip_transaction.h:119
+   --     is_reliable : aliased pj_types_h.pj_bool_t;  -- /usr/local/include/pjsip/sip_transaction.h:120
+   --     addr : pj_sock_h.pj_sockaddr;  -- /usr/local/include/pjsip/sip_transaction.h:121
+   --     addr_len : aliased int;  -- /usr/local/include/pjsip/sip_transaction.h:122
+   --     res_addr : aliased pjsip_sip_util_h.pjsip_response_addr;  -- /usr/local/include/pjsip/sip_transaction.h:123
+   --     transport_flag : aliased unsigned;  -- /usr/local/include/pjsip/sip_transaction.h:124
+   --     transport_err : aliased pj_types_h.pj_status_t;  -- /usr/local/include/pjsip/sip_transaction.h:125
+   --     tp_sel : aliased pjsip_sip_transport_h.pjsip_tpselector;  -- /usr/local/include/pjsip/sip_transaction.h:126
+   --     pending_tx : access pjsip_sip_types_h.pjsip_tx_data;  -- /usr/local/include/pjsip/sip_transaction.h:127
+   --     tp_st_key : System.Address;  -- /usr/local/include/pjsip/sip_transaction.h:130
+   --     last_tx : access pjsip_sip_types_h.pjsip_tx_data;  -- /usr/local/include/pjsip/sip_transaction.h:136
+   --     retransmit_count : aliased int;  -- /usr/local/include/pjsip/sip_transaction.h:137
+   --     retransmit_timer : aliased pj_types_h.pj_timer_entry;  -- /usr/local/include/pjsip/sip_transaction.h:138
+   --     timeout_timer : aliased pj_types_h.pj_timer_entry;  -- /usr/local/include/pjsip/sip_transaction.h:139
+   --     mod_data : aliased anon984_anon2093_array;  -- /usr/local/include/pjsip/sip_transaction.h:142
+   --  end record;
+   --  pragma Convention (C_Pass_By_Copy, pjsip_transaction);  -- /usr/local/include/pjsip/sip_transaction.h:80
+   
+   
    -- FIXME:
    type anon_2242 is null record;
    --  type anon_2242 is record
